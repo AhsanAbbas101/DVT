@@ -2,10 +2,10 @@ import daft
 
 class Loader:
 
-  def load_csv(self,path :str):
+  def load_csv(self,path :str, io_config= None):
 
     try:
-      return daft.read_csv(path)
+      return daft.read_csv(path=path, io_config=io_config)
 
     except Exception:
       raise Exception('Error reading csv: '+path )
