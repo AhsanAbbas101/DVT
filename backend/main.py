@@ -1,16 +1,23 @@
 # from loader import Loader
-from profile import Profile
+from profile import Profile # type: ignore
 from detector import Detector
 import daft
-
+import yaml
 
 csv_path = './data/test.csv'
 io_config = daft.io.IOConfig(s3=daft.io.S3Config(endpoint_url='http://localstack:4566/', anonymous=True))
+with open('./data/detectors.yml', 'r') as file:
+    detectors = yaml.safe_load(file)
 
-profile = Profile(csv_path, io_config)
-detector = Detector(profile.data, profile.detectors) 
+# Load data
+profile = Profile(csv_path, io_config=io_config, detectors=detectors)
+print(profile._schema)
+
+detector = Detector(profile._data, profile._detectors) 
 
 detector.detect_issues()
+
+
 # loader = Loader()
 
 # csv_path = 'http://host.docker.internal:4566/test-bucket/sales.csv'

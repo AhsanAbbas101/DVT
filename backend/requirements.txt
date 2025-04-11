@@ -1,3 +1,4 @@
 getdaft[aws]
 awscli-local[ver1]
 Pillow
+opencv-python
