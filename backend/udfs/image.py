@@ -24,22 +24,22 @@ def image_dimension(image_bytes):
 
 @daft.udf(return_dtype=DataType.float32())
 def image_blur_var(image_bytes):
-   
+
   def get_variance(bytes):
     try:
       np_arr = np.frombuffer(bytes, np.uint8)
       img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
       if img is None:
          return None
-      
-      gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert the image to grayscale
-      laplacian = cv2.Laplacian(gray, cv2.CV_32F)  # Compute Laplacian 
+
+      gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+      laplacian = cv2.Laplacian(gray, cv2.CV_32F)  # Compute Laplacian
       variance = laplacian.var() # Compute variance of the Laplacian
       return variance
     except Exception as e:
       print(e)
       return None
-    
+
   return [ get_variance(img) for img in image_bytes ]
 
 
@@ -52,21 +52,20 @@ class DetectFace:
     )
   def __call__(self, images_bytes):
     return [self._detect_faces(img) for img in images_bytes]
-  
+
   def _detect_faces(self, bytes_img):
       if bytes_img is None:
          return None
-      
+
       np_arr = np.frombuffer(bytes_img, np.uint8)
       img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
       if img is None:
          return None
-      
-      gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  
+
+      gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
       faces = self.face_classifier.detectMultiScale(
-        gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40)
+        gray_image, scaleFactor=1.2, minNeighbors=15
       )
 
       return len(faces)
-  
